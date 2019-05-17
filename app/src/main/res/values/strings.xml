@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">WestpacProject</string>
+
+    <string name="btn_opengallery">Open Gallery</string>
+</resources>
