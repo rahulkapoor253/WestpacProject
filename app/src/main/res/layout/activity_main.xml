@@ -7,16 +7,14 @@
     tools:context=".MainActivity">
 
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/ic_launcher"
-        />
+    <GridView
+        android:id="@+id/gv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="2dp"
+        android:layout_weight="1"
+        android:numColumns="3">
+    </GridView>
 
 
     <Button
