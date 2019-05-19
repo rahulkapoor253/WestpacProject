@@ -2,6 +2,7 @@ package com.example.rahulkapoor.westpacproject;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ public class GalleryAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
+        Log.d("adapter", "count is : " + mArrayUri.size() + "");
         return mArrayUri.size();
     }
 

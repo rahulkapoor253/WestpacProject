@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnGallery;
     private Intent galleryIntent;
     private static int IMG_RESULT = 1;
-    private String ImageDecode;
+    private String ImageEncode;
     private Bitmap bmp;
     BitmapFactory.Options options;
     private ArrayList<String> imagesList = new ArrayList<>();
@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnGallery = (Button) findViewById(R.id.btn_opengallery);
+        gvGallery = (GridView) findViewById(R.id.gv);
 
         btnGallery.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,10 +86,9 @@ public class MainActivity extends AppCompatActivity {
                     cursor.moveToFirst();
 
                     int columnIndex = cursor.getColumnIndex(FILE[0]);
-                    ImageDecode = cursor.getString(columnIndex);
+                    ImageEncode = cursor.getString(columnIndex);
                     cursor.close();
 
-                    Log.d("image path", ImageDecode);
 
                     ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
                     mArrayUri.add(URI);
@@ -108,27 +108,38 @@ public class MainActivity extends AppCompatActivity {
                         ClipData mClipData = data.getClipData();
                         ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
 
-                        for (int i = 0; i < mClipData.getItemCount(); i++) {
+                        //limit user of selecting 9 images;
+                        if (mClipData.getItemCount() > 9) {
+                            Toast.makeText(this, "Cannot proceed with more than 9 images", Toast.LENGTH_SHORT).show();
+                        } else {
 
-                            ClipData.Item item = mClipData.getItemAt(i);
-                            Uri uri = item.getUri();
-                            mArrayUri.add(uri);
-                            // Get the cursor
-                            Cursor cursor = getContentResolver().query(uri, FILE, null, null, null);
-                            // Move to first row
-                            cursor.moveToFirst();
+                            for (int i = 0; i < mClipData.getItemCount(); i++) {
 
-                            galleryAdapter = new GalleryAdapter(getApplicationContext(), mArrayUri);
-                            gvGallery.setAdapter(galleryAdapter);
-                            gvGallery.setVerticalSpacing(gvGallery.getHorizontalSpacing());
-                            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) gvGallery
-                                    .getLayoutParams();
-                            mlp.setMargins(0, gvGallery.getHorizontalSpacing(), 0, 0);
+                                ClipData.Item item = mClipData.getItemAt(i);
+                                Uri uri = item.getUri();
+                                mArrayUri.add(uri);
+                                // Get the cursor
+                                Cursor cursor = getContentResolver().query(uri, FILE, null, null, null);
+                                // Move to first row
+                                cursor.moveToFirst();
+
+                                galleryAdapter = new GalleryAdapter(getApplicationContext(), mArrayUri);
+                                gvGallery.setAdapter(galleryAdapter);
+                                gvGallery.setVerticalSpacing(gvGallery.getHorizontalSpacing());
+                                ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) gvGallery
+                                        .getLayoutParams();
+                                mlp.setMargins(0, gvGallery.getHorizontalSpacing(), 0, 0);
+                            }
+
                         }
 
                     }
 
+
                 }
+            } else {
+                Toast.makeText(this, "You havent picked any image", Toast.LENGTH_LONG)
+                        .show();
             }
 
         } catch (Exception e) {
