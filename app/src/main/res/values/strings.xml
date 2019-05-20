@@ -2,4 +2,5 @@
     <string name="app_name">WestpacProject</string>
 
     <string name="btn_opengallery">Open Gallery</string>
+    <string name="btn_sendmail">Send Mail</string>
 </resources>

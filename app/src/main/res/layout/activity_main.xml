@@ -1,34 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:layout_margin="8dp"
     tools:context=".MainActivity">
 
+
+    <LinearLayout
+        android:id="@+id/ll_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789."
+            android:hint="Your Westpac Email"
+            android:maxLength="25"
+            android:textSize="16dp"
+            />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:text="westpac.com.au"
+            android:textSize="16dp"
+            />
+
+    </LinearLayout>
 
     <GridView
         android:id="@+id/gv"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="2dp"
+        android:layout_height="match_parent"
+        android:layout_below="@id/ll_input"
+        android:layout_marginTop="4dp"
         android:layout_weight="1"
         android:numColumns="3">
     </GridView>
 
 
-    <Button
-        android:id="@+id/btn_opengallery"
-        style="@style/Widget.AppCompat.Button.Colored"
+    <LinearLayout
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:padding="4dp"
-        android:text="@string/btn_opengallery"/>
+        android:layout_alignParentBottom="true"
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
 
-</LinearLayout>
+        <Button
+            android:id="@+id/btn_opengallery"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="4dp"
+            android:layout_weight="0.5"
+            android:padding="4dp"
+            android:text="@string/btn_opengallery"/>
+
+        <Button
+            android:id="@+id/btn_sendmail"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="4dp"
+            android:layout_weight="0.5"
+            android:padding="4dp"
+            android:text="@string/btn_sendmail"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>
