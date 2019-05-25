@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> imagesList = new ArrayList<>();
     private GalleryAdapter galleryAdapter;
     private GridView gvGallery;
-    private ArrayList<Uri> mArrayUri;
+    private ArrayList<Uri> mArrayUri = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
