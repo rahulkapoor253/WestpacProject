@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
@@ -36,12 +37,13 @@ public class MailUtils extends AsyncTask<Void, Void, Void> {
     private String senderEmail = "rahul253801@gmail.com";
     private String senderPassword = "Rahul@1996";
     private String filename;
+    private ArrayList<String> cacheFileData = new ArrayList<>();
+    private ArrayList<BodyPart> messageBodyList = new ArrayList<>();
 
-    public MailUtils(Context context, String filename) {
+    public MailUtils(Context context, ArrayList<String> cacheData) {
         //Initializing variables
         this.context = context;
-
-        this.filename = filename;
+        this.cacheFileData = cacheData;
     }
 
     @Override
@@ -87,22 +89,31 @@ public class MailUtils extends AsyncTask<Void, Void, Void> {
             //Adding receiver
             mm.addRecipient(Message.RecipientType.TO, new InternetAddress("rahul253801@gmail.com"));
             //Adding subject
-            mm.setSubject("hi there");
+            mm.setSubject("WorkFlow Images");
             //Adding message
             // Now set the actual message
-            BodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setFileName(filename);
+            messageBodyList.clear();
 
-            DataSource source = new FileDataSource(filename);
-            messageBodyPart.setDataHandler(new DataHandler(source));
-            messageBodyPart.setFileName(filename + ".jpg");
+            for (int i = 0; i < cacheFileData.size(); i++) {
+
+                BodyPart messageBodyPart = new MimeBodyPart();
+                DataSource source = new FileDataSource(cacheFileData.get(i));
+                messageBodyPart.setDataHandler(new DataHandler(source));
+                messageBodyPart.setFileName(cacheFileData.get(i) + ".jpg");
+
+                //add the message body part in list then clear it;
+                messageBodyList.add(messageBodyPart);
+            }
+
             // Create a multipar message
             Multipart multipart = new MimeMultipart();
 
             // Set text message part
-            multipart.addBodyPart(messageBodyPart);
+            for (int i = 0; i < messageBodyList.size(); i++) {
+                multipart.addBodyPart(messageBodyList.get(i));
+            }
 
-            // Send the complete message parts
+            // Send the complete multipart with list of body parts;
             mm.setContent(multipart);
             //Sending email
             Transport.send(mm);

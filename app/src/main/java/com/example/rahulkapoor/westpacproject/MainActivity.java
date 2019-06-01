@@ -10,10 +10,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -45,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private GridView gvGallery;
     private ArrayList<Uri> mArrayUri = new ArrayList<>();
     private String filePath;
+    private ArrayList<String> cacheFileArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                         String userEmail = etEmail.getText().toString() + "@gmail.com";
 
                         //send email via smtp;
-                        new MailUtils(MainActivity.this, filePath).execute();//call send mail  cunstructor asyntask by  sending perameter
+                        new MailUtils(MainActivity.this, cacheFileArrayList).execute();//call send mail  cunstructor asyntask by  sending perameter
 
 
                     } else {
@@ -128,23 +127,18 @@ public class MainActivity extends AppCompatActivity {
 
                 String[] FILE = {MediaStore.Images.Media.DATA};
                 imagesList = new ArrayList<String>();
+                cacheFileArrayList = new ArrayList<>();
 
                 if (data.getData() != null) {
 
+                    cacheFileArrayList.clear();
                     Log.d("gallery", data.getData() + "");
 
                     final Uri URI = data.getData();
 
-                    String finalPath = "";
-
-                    finalPath = getPath(URI);
-
-                    filePath = finalPath;
-
-                    //finalPath = getAbsolutePath(URI);
-
-                    //finalPath = getParentDirectory(URI);
-
+                    //add .jpg extension to read image on server;
+                    String finalPath = getPath(URI);
+                    cacheFileArrayList.add(finalPath);
 
                     Cursor cursor = getContentResolver().query(URI,
                             FILE, null, null, null);
@@ -174,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
                         mArrayUri = new ArrayList<Uri>();
 
                         //limit user of selecting 9 images;
+                        cacheFileArrayList.clear();
                         if (mClipData.getItemCount() > 9) {
                             Toast.makeText(this, "Cannot proceed with more than 9 images", Toast.LENGTH_SHORT).show();
                         } else {
@@ -183,6 +178,10 @@ public class MainActivity extends AppCompatActivity {
                                 ClipData.Item item = mClipData.getItemAt(i);
                                 Uri uri = item.getUri();
                                 Log.d("uri data", item.getUri() + "");
+
+                                String finalPath = getPath(uri);
+                                cacheFileArrayList.add(finalPath);
+
                                 mArrayUri.add(uri);
                                 // Get the cursor
                                 Cursor cursor = getContentResolver().query(uri, FILE, null, null, null);
@@ -234,23 +233,6 @@ public class MainActivity extends AppCompatActivity {
         return "";
     }
 
-    private String getParentDirectory(@NonNull Uri uri) {
-        String uriPath = uri.getPath();
-        String filePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        if (uriPath != null) {
-            filePath = new File(filePath.concat("/" + uriPath.split(":")[1])).getParent();
-        }
-        return filePath;
-    }
-
-    private String getAbsolutePath(@NonNull Uri uri) {
-        String uriPath = uri.getPath();
-        String filePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        if (uriPath != null) {
-            filePath = filePath.concat("/" + uriPath.split(":")[1]);
-        }
-        return filePath;
-    }
 
     void writeFile(InputStream in, File file) {
         OutputStream out = null;
