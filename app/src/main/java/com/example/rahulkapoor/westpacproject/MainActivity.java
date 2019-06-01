@@ -10,7 +10,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -21,6 +24,11 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private GalleryAdapter galleryAdapter;
     private GridView gvGallery;
     private ArrayList<Uri> mArrayUri = new ArrayList<>();
+    private String filePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +61,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(final View v) {
                 //open up gallery and select images;
                 galleryIntent = new Intent();
-                galleryIntent.setType("image/*");
+                galleryIntent.setType("*/*");
                 galleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
                 // galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-
-                startActivityForResult(Intent.createChooser(galleryIntent, "Select picture"), IMG_RESULT);
+                startActivityForResult(galleryIntent, IMG_RESULT);
 
             }
         });
@@ -71,9 +79,10 @@ public class MainActivity extends AppCompatActivity {
                     boolean checkConnection = isOnline();
                     if (checkConnection) {
                         //net is connected
-                        String userEmail = etEmail.getText().toString() + "@westpac.com.au";
+                        String userEmail = etEmail.getText().toString() + "@gmail.com";
 
                         //send email via smtp;
+                        new MailUtils(MainActivity.this, filePath).execute();//call send mail  cunstructor asyntask by  sending perameter
 
 
                     } else {
@@ -87,6 +96,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public static String getRealPathFromURI(Context context, Uri contentUri) {
+        String[] proj = {MediaStore.Images.Media.DATA};
+        Cursor cursor = context.getContentResolver().query(contentUri, proj, null, null,
+                null);
+        if (cursor != null) {
+            int column_index =
+                    cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        }
+        return null;
     }
 
 
@@ -112,7 +134,17 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("gallery", data.getData() + "");
 
                     final Uri URI = data.getData();
-                    // String[] FILE = {MediaStore.Images.Media.DATA};
+
+                    String finalPath = "";
+
+                    finalPath = getPath(URI);
+
+                    filePath = finalPath;
+
+                    //finalPath = getAbsolutePath(URI);
+
+                    //finalPath = getParentDirectory(URI);
+
 
                     Cursor cursor = getContentResolver().query(URI,
                             FILE, null, null, null);
@@ -122,7 +154,6 @@ public class MainActivity extends AppCompatActivity {
                     int columnIndex = cursor.getColumnIndex(FILE[0]);
                     ImageEncode = cursor.getString(columnIndex);
                     cursor.close();
-
 
                     mArrayUri = new ArrayList<Uri>();
                     mArrayUri.add(URI);
@@ -182,6 +213,66 @@ public class MainActivity extends AppCompatActivity {
                     .show();
         }
 
+    }
+
+    public String getPath(Uri uri) {
+
+        String id = DocumentsContract.getDocumentId(uri);
+        try {
+
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            //write this file in cache;
+            File file = new File(getCacheDir().getAbsolutePath() + "/" + id);
+            writeFile(inputStream, file);
+            String filePath = file.getAbsolutePath();
+            return filePath;
+
+        } catch (Exception e) {
+            Toast.makeText(this, "File not found.", Toast.LENGTH_SHORT).show();
+        }
+
+        return "";
+    }
+
+    private String getParentDirectory(@NonNull Uri uri) {
+        String uriPath = uri.getPath();
+        String filePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        if (uriPath != null) {
+            filePath = new File(filePath.concat("/" + uriPath.split(":")[1])).getParent();
+        }
+        return filePath;
+    }
+
+    private String getAbsolutePath(@NonNull Uri uri) {
+        String uriPath = uri.getPath();
+        String filePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        if (uriPath != null) {
+            filePath = filePath.concat("/" + uriPath.split(":")[1]);
+        }
+        return filePath;
+    }
+
+    void writeFile(InputStream in, File file) {
+        OutputStream out = null;
+        try {
+            out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public boolean isOnline() {
