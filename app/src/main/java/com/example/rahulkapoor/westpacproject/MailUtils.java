@@ -39,12 +39,15 @@ public class MailUtils extends AsyncTask<Void, Void, Void> {
     private String filename;
     private ArrayList<String> cacheFileData = new ArrayList<>();
     private ArrayList<BodyPart> messageBodyList = new ArrayList<>();
+    private String userEmail;
 
-    public MailUtils(Context context, ArrayList<String> cacheData) {
+    public MailUtils(Context context, ArrayList<String> cacheData, String email) {
         //Initializing variables
         this.context = context;
         this.cacheFileData = cacheData;
+        this.userEmail = email;
     }
+
 
     @Override
     protected void onPreExecute() {
@@ -60,6 +63,7 @@ public class MailUtils extends AsyncTask<Void, Void, Void> {
         progressDialog.dismiss();
         //Showing a success message
         Toast.makeText(context, "Message Sent", Toast.LENGTH_LONG).show();
+
     }
 
     @Override
@@ -87,7 +91,7 @@ public class MailUtils extends AsyncTask<Void, Void, Void> {
             //Setting sender address
             mm.setFrom(new InternetAddress(senderEmail));
             //Adding receiver
-            mm.addRecipient(Message.RecipientType.TO, new InternetAddress("rahul253801@gmail.com"));
+            mm.addRecipient(Message.RecipientType.TO, new InternetAddress(userEmail));
             //Adding subject
             mm.setSubject("WorkFlow Images");
             //Adding message

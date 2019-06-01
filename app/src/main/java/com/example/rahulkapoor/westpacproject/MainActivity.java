@@ -76,12 +76,24 @@ public class MainActivity extends AppCompatActivity {
                 //check size of uri list before sending mail
                 if (mArrayUri.size() > 0) {
                     boolean checkConnection = isOnline();
+                    String userEmail = "";
                     if (checkConnection) {
                         //net is connected
-                        String userEmail = etEmail.getText().toString() + "@gmail.com";
+                        if (!etEmail.getText().toString().isEmpty() && etEmail.getText().toString() != null) {
 
-                        //send email via smtp;
-                        new MailUtils(MainActivity.this, cacheFileArrayList).execute();//call send mail  cunstructor asyntask by  sending perameter
+                            userEmail = etEmail.getText().toString() + "@westpac.com.au";
+
+                            //send email via smtp;
+                            new MailUtils(MainActivity.this, cacheFileArrayList, userEmail).execute();//call send mail  cunstructor asyntask by  sending perameter
+
+                            //update the adapter;
+                            etEmail.setText("");
+                            mArrayUri.clear();
+                            galleryAdapter.notifyDataSetChanged();
+
+                        } else {
+                            Toast.makeText(MainActivity.this, "Enter Email Correctly", Toast.LENGTH_SHORT).show();
+                        }
 
 
                     } else {
